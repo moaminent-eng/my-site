@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>إلى صباح</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFBFA;
+    --pink-light:#F9DCE5;
+    --pink:#F3B8CD;
+    --lavender-light:#EFE7FA;
+    --lavender:#C9B6E4;
+    --rose-deep:#B76E86;
+    --rose-deeper:#9C5872;
+    --text-dark:#4A3B52;
+    --text-soft:#8A7A92;
+    --glass-bg: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(243,184,205,0.22));
+    --glass-border: rgba(255,255,255,0.65);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    overflow:hidden;
+    background: var(--white);
+    font-family:'Tajawal', sans-serif;
+    color: var(--text-dark);
+    -webkit-tap-highlight-color: transparent;
+  }
+  body{
+    position:relative;
+    width:100%;
+    height:100dvh;
+  }
+
+  /* ---------- Ambient aurora background ---------- */
+  .aurora{
+    position:fixed; inset:0; z-index:0; overflow:hidden;
+    background: linear-gradient(160deg, #FFFDFC 0%, #FDEFF3 45%, #F1E7FA 100%);
+  }
+  .blob{
+    position:absolute; border-radius:50%;
+    filter: blur(60px);
+    opacity:0.55;
+    animation: drift 22s ease-in-out infinite;
+  }
+  .blob1{ width:55vmax; height:55vmax; background: radial-gradient(circle, var(--pink) 0%, transparent 70%); top:-20%; right:-15%; animation-duration:26s;}
+  .blob2{ width:45vmax; height:45vmax; background: radial-gradient(circle, var(--lavender) 0%, transparent 70%); bottom:-15%; left:-15%; animation-duration:32s; animation-delay:-8s;}
+  .blob3{ width:35vmax; height:35vmax; background: radial-gradient(circle, var(--pink-light) 0%, transparent 70%); top:40%; left:30%; animation-duration:20s; animation-delay:-4s;}
+  @keyframes drift{
+    0%,100%{ transform: translate(0,0) scale(1); }
+    33%{ transform: translate(4%, -6%) scale(1.08); }
+    66%{ transform: translate(-5%, 4%) scale(0.95); }
+  }
+
+  canvas#particles{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+
+  /* ---------- Controls ---------- */
+  .sound-btn{
+    position:fixed; top:18px; left:18px; z-index:50;
+    width:46px; height:46px; border-radius:50%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(14px) saturate(160%);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 4px 18px rgba(183,110,134,0.25);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; font-size:19px; color:var(--rose-deeper);
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .sound-btn:hover{ transform: scale(1.08); }
+  .sound-btn:active{ transform: scale(0.94); }
+
+  .dots{
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    z-index:50; display:flex; gap:8px;
+  }
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: rgba(183,110,134,0.25);
+    transition: all .4s ease;
+  }
+  .dot.active{ background: var(--rose-deep); width:22px; border-radius:5px; }
+
+  /* ---------- Screens ---------- */
+  .screen{
+    position:fixed; inset:0; z-index:5;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    text-align:center;
+    padding: 32px 22px;
+    opacity:0; visibility:hidden;
+    transform: translateY(24px) scale(0.98);
+    transition: opacity .9s cubic-bezier(.22,.68,.35,1), transform .9s cubic-bezier(.22,.68,.35,1), visibility 0s linear .9s;
+  }
+  .screen.active{
+    opacity:1; visibility:visible;
+    transform: translateY(0) scale(1);
+    transition: opacity .9s cubic-bezier(.22,.68,.35,1), transform .9s cubic-bezier(.22,.68,.35,1);
+  }
+  .screen.exit{
+    opacity:0;
+    transform: translateY(-24px) scale(0.98);
+  }
+
+  .eyebrow{
+    font-size: clamp(13px,3vw,15px);
+    letter-spacing:.12em;
+    color: var(--rose-deep);
+    opacity:0.8;
+    margin-bottom:14px;
+    font-weight:500;
+  }
+  h1.hero{
+    font-family:'Aref Ruqaa', serif;
+    font-size: clamp(34px, 9vw, 62px);
+    font-weight:700;
+    color: var(--text-dark);
+    line-height:1.35;
+    margin-bottom:16px;
+    text-shadow: 0 2px 24px rgba(243,184,205,0.5);
+  }
+  .subtitle{
+    font-size: clamp(15px,3.6vw,19px);
+    color: var(--text-soft);
+    font-weight:300;
+    margin-bottom:38px;
+    max-width:520px;
+  }
+  h2.title{
+    font-family:'Aref Ruqaa', serif;
+    font-size: clamp(24px,6.5vw,40px);
+    color: var(--rose-deeper);
+    margin-bottom:30px;
+    font-weight:700;
+  }
+
+  .btn{
+    font-family:'Tajawal', sans-serif;
+    font-size: clamp(15px,3.6vw,17px);
+    font-weight:700;
+    color:#fff;
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose-deeper));
+    border:none; border-radius:999px;
+    padding: 16px 46px;
+    cursor:pointer;
+    box-shadow: 0 10px 30px rgba(156,88,114,0.35);
+    transition: transform .35s cubic-bezier(.22,.68,.35,1), box-shadow .35s ease, opacity .5s ease;
+    letter-spacing:.02em;
+    opacity:0;
+    animation: btnIn .8s ease forwards;
+    animation-delay: 0.3s;
+  }
+  .btn:hover{ transform: translateY(-3px) scale(1.03); box-shadow: 0 14px 36px rgba(156,88,114,0.45); }
+  .btn:active{ transform: translateY(0) scale(0.97); }
+  .btn:focus-visible{ outline: 2px solid var(--rose-deeper); outline-offset:3px; }
+  .btn.hidden-btn{ visibility:hidden; pointer-events:none; }
+  @keyframes btnIn{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Text reveal lines ---------- */
+  .lines{ max-width:560px; display:flex; flex-direction:column; gap:16px; margin-bottom:34px; }
+  .lines .line{
+    font-size: clamp(16px,4vw,21px);
+    font-weight:400;
+    color: var(--text-dark);
+    line-height:1.9;
+    opacity:0;
+    transform: translateY(16px);
+    animation: lineIn 1s cubic-bezier(.22,.68,.35,1) forwards;
+  }
+  @keyframes lineIn{ to{ opacity:1; transform:translateY(0); } }
+
+  .typewrite-wrap{ max-width:560px; min-height:170px; margin-bottom:30px; }
+  .typewrite{
+    font-size: clamp(17px,4.2vw,22px);
+    line-height:2;
+    color: var(--text-dark);
+    white-space: pre-line;
+  }
+  .caret{
+    display:inline-block; width:2px; height:1em; background: var(--rose-deep);
+    margin-inline-start:2px; vertical-align:middle;
+    animation: blink 0.9s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- Heart signature ---------- */
+  .heart-wrap{ margin-bottom:26px; position:relative; width:120px; height:110px; }
+  .heart{
+    position:absolute; inset:0; margin:auto;
+    width:90px; height:90px;
+    animation: heartbeat 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(243,184,205,0.9));
+  }
+  .heart svg{ width:100%; height:100%; }
+  @keyframes heartbeat{
+    0%,100%{ transform: scale(1); }
+    15%{ transform: scale(1.12); }
+    30%{ transform: scale(0.98); }
+    45%{ transform: scale(1.08); }
+    60%{ transform: scale(1); }
+  }
+  .heart-glow{
+    position:absolute; inset:0; margin:auto;
+    width:160px; height:160px;
+    border-radius:50%;
+    background: radial-gradient(circle, rgba(243,184,205,0.55) 0%, transparent 70%);
+    animation: glowPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes glowPulse{
+    0%,100%{ transform: scale(0.9); opacity:0.6; }
+    50%{ transform: scale(1.15); opacity:1; }
+  }
+
+  /* calm breathing circle for section 6 */
+  .breathe-wrap{ width:130px; height:130px; margin-bottom:30px; position:relative; }
+  .breathe{
+    position:absolute; inset:0; border-radius:50%;
+    background: linear-gradient(135deg, rgba(201,182,228,0.55), rgba(243,184,205,0.5));
+    animation: breathe 4.5s ease-in-out infinite;
+    box-shadow: 0 0 40px rgba(201,182,228,0.5);
+  }
+  @keyframes breathe{
+    0%,100%{ transform: scale(0.82); opacity:0.75; }
+    50%{ transform: scale(1.05); opacity:1; }
+  }
+
+  /* ---------- Final glass card ---------- */
+  .card{
+    max-width:600px; width:100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: clamp(28px,6vw,52px) clamp(22px,6vw,48px);
+    box-shadow: 0 20px 60px rgba(183,110,134,0.28), inset 0 1px 1px rgba(255,255,255,0.7);
+  }
+  .card .line{
+    font-size: clamp(16px,4vw,20px);
+    line-height:2;
+    margin-bottom:14px;
+    color: var(--text-dark);
+  }
+  .card .signature{
+    font-family:'Aref Ruqaa', serif;
+    font-size: clamp(22px,5vw,28px);
+    color: var(--rose-deeper);
+    margin-top:18px;
+    font-weight:700;
+  }
+
+  .final-note{
+    margin-top:26px;
+    font-size:13px;
+    color: var(--text-soft);
+    opacity:0;
+    animation: lineIn 1.2s ease forwards;
+    animation-delay: 4.2s;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+
+  @media (max-width: 380px){
+    .card{ border-radius:22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+</div>
+<canvas id="particles"></canvas>
+
+<button class="sound-btn" id="soundBtn" aria-label="تشغيل أو كتم الموسيقى">🔇</button>
+<div class="dots" id="dots"></div>
+
+<!-- SCREEN 1 -->
+<section class="screen active" id="screen-1">
+  <div class="eyebrow">رسالة خاصة</div>
+  <h1 class="hero">🌸 مرحبًا صباح</h1>
+  <p class="subtitle">هذا الرابط صُمم خصيصًا لك.</p>
+  <button class="btn" onclick="goTo(2)">ابدئي</button>
+</section>
+
+<!-- SCREEN 2 -->
+<section class="screen" id="screen-2">
+  <div class="lines" id="lines-2">
+    <p class="line">قبل أن أقول أي شيء...</p>
+    <p class="line">أردت فقط أن أشكرك لأنك وصلتِ إلى هنا.</p>
+  </div>
+  <button class="btn hidden-btn" id="btn-2" onclick="goTo(3)">التالي</button>
+</section>
+
+<!-- SCREEN 3 -->
+<section class="screen" id="screen-3">
+  <h2 class="title">هناك شيء أردت أن تعرفيه...</h2>
+  <div class="typewrite-wrap">
+    <span class="typewrite" id="type-3"></span><span class="caret" id="caret-3"></span>
+  </div>
+  <button class="btn hidden-btn" id="btn-3" onclick="goTo(4)">التالي</button>
+</section>
+
+<!-- SCREEN 4 -->
+<section class="screen" id="screen-4">
+  <div class="heart-wrap">
+    <div class="heart-glow"></div>
+    <div class="heart">
+      <svg viewBox="0 0 32 29" fill="none">
+        <path d="M16 28.5s-13-8.35-15-16.02C-.4 6.6 3.3 1.5 8.7 1.5c3.2 0 5.8 1.7 7.3 4.3 1.5-2.6 4.1-4.3 7.3-4.3 5.4 0 9.1 5.1 7.7 10.98-2 7.67-15 16.02-15 16.02Z" fill="#F3B8CD" stroke="#B76E86" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+  <div class="lines" id="lines-4"></div>
+  <button class="btn hidden-btn" id="btn-4" onclick="goTo(5)">التالي</button>
+</section>
+
+<!-- SCREEN 5 -->
+<section class="screen" id="screen-5">
+  <div class="lines" id="lines-5"></div>
+  <button class="btn hidden-btn" id="btn-5" onclick="goTo(6)">التالي</button>
+</section>
+
+<!-- SCREEN 6 -->
+<section class="screen" id="screen-6">
+  <div class="breathe-wrap"><div class="breathe"></div></div>
+  <div class="lines" id="lines-6"></div>
+  <button class="btn hidden-btn" id="btn-6" onclick="goTo(7)">التالي</button>
+</section>
+
+<!-- SCREEN 7 -->
+<section class="screen" id="screen-7">
+  <div class="card" id="card-7"></div>
+</section>
+
+<script>
+/* ---------------- Navigation ---------------- */
+const total = 7;
+let current = 1;
+
+function makeDots(){
+  const wrap = document.getElementById('dots');
+  for(let i=1;i<=total;i++){
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===1 ? ' active' : '');
+    d.id = 'dot-'+i;
+    wrap.appendChild(d);
+  }
+}
+makeDots();
+
+function updateDots(n){
+  for(let i=1;i<=total;i++){
+    document.getElementById('dot-'+i).classList.toggle('active', i===n);
+  }
+}
+
+function goTo(n){
+  const curEl = document.getElementById('screen-'+current);
+  curEl.classList.add('exit');
+  curEl.classList.remove('active');
+  setTimeout(()=>{ curEl.classList.remove('exit'); }, 900);
+
+  const nextEl = document.getElementById('screen-'+n);
+  nextEl.classList.add('active');
+  current = n;
+  updateDots(n);
+  triggerScreen(n);
+}
+
+function triggerScreen(n){
+  if(n===3) runTypewriter();
+  if(n===4) runLines('lines-4', textSec4, 'btn-4');
+  if(n===5) runLines('lines-5', textSec5, 'btn-5');
+  if(n===6) runLines('lines-6', textSec6, 'btn-6');
+  if(n===7) runFinal();
+  if(n===2){
+    setTimeout(()=>{ document.getElementById('btn-2').classList.remove('hidden-btn'); }, 1600);
+  }
+}
+
+/* ---------------- Line reveal helper ---------------- */
+function runLines(containerId, lines, btnId){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  lines.forEach((txt, i)=>{
+    const p = document.createElement('p');
+    p.className = 'line';
+    p.textContent = txt;
+    p.style.animationDelay = (0.25 + i*0.55) + 's';
+    el.appendChild(p);
+  });
+  const totalTime = (0.25 + lines.length*0.55 + 0.6) * 1000;
+  const btn = document.getElementById(btnId);
+  if(btn){
+    btn.classList.add('hidden-btn');
+    setTimeout(()=>{ btn.classList.remove('hidden-btn'); }, totalTime);
+  }
+}
+
+const textSec4 = [
+  "لم تكن نيتي يومًا أن أجرحك...",
+  "أو أن أكون سببًا في ضيقك.",
+  "كل ما حدث كان نتيجة تصرفات لم أفكر في أثرها بالشكل الكافي.",
+  "لكن ما في قلبي تجاهك كان دائمًا صادقًا."
+];
+const textSec5 = [
+  "أحيانًا تكون النية طيبة...",
+  "لكن الطريقة لا تكون الأفضل.",
+  "وهذا ما أدركته.",
+  "ولهذا كان من المهم بالنسبة لي أن تصلك حقيقة ما كنت أشعر به."
+];
+const textSec6 = [
+  "لا أريد أن أبرر ما حدث...",
+  "ولا أن أغير شعورك.",
+  "كل ما أردته هو أن تعرفي الحقيقة كما هي."
+];
+
+/* ---------------- Typewriter (section 3) ---------------- */
+const typeText3 = "أعلم أن بعض تصرفاتي أزعجتك...\n\nوأتفهم تمامًا شعورك.\n\nلهذا أردت أن أوضح لك ما بداخلي.";
+let typeStarted3 = false;
+function runTypewriter(){
+  if(typeStarted3) return;
+  typeStarted3 = true;
+  const el = document.getElementById('type-3');
+  const btn = document.getElementById('btn-3');
+  let i = 0;
+  function step(){
+    if(i <= typeText3.length){
+      el.textContent = typeText3.slice(0, i);
+      const ch = typeText3[i-1];
+      let delay = 38;
+      if(ch === '.') delay = 300;
+      if(ch === '\n') delay = 250;
+      i++;
+      setTimeout(step, delay);
+    } else {
+      document.getElementById('caret-3').style.display = 'none';
+      setTimeout(()=>{ btn.classList.remove('hidden-btn'); }, 400);
+    }
+  }
+  step();
+}
+
+/* ---------------- Final card (section 7) ---------------- */
+const finalLines = [
+  "صباح...",
+  "أردت فقط أن تصلك هذه الكلمات كما خرجت من قلبي.",
+  "ربما لم تكن بعض تصرفاتي موفقة، لكنني لم أقصد يومًا أن أسبب لك أي ضيق، وكانت نيتي دائمًا صادقة.",
+  "أتمنى فقط أن تصلك رسالتي كما هي...",
+  "بكل صدق، واحترام، وتقدير."
+];
+let finalStarted = false;
+function runFinal(){
+  if(finalStarted) return;
+  finalStarted = true;
+  const card = document.getElementById('card-7');
+  card.innerHTML = '';
+  finalLines.forEach((txt,i)=>{
+    const p = document.createElement('p');
+    p.className = 'line';
+    p.textContent = txt;
+    p.style.animationDelay = (0.3 + i*0.75) + 's';
+    card.appendChild(p);
+  });
+  const sig = document.createElement('p');
+  sig.className = 'signature line';
+  sig.textContent = '— أمين ❤️';
+  sig.style.animationDelay = (0.3 + finalLines.length*0.75 + 0.3) + 's';
+  card.appendChild(sig);
+
+  const note = document.createElement('p');
+  note.className = 'final-note';
+  card.appendChild(note);
+
+  intensifyParticles();
+}
+
+/* ---------------- Particle system (floating hearts & petals) ---------------- */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W, H;
+function resize(){ W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+
+let particleCount = 16;
+let particles = [];
+
+function makeParticle(){
+  const type = Math.random() > 0.55 ? 'heart' : 'petal';
+  return {
+    type,
+    x: Math.random()*W,
+    y: H + Math.random()*100,
+    size: 8 + Math.random()*14,
+    speed: 0.35 + Math.random()*0.6,
+    drift: (Math.random()-0.5)*0.6,
+    sway: Math.random()*Math.PI*2,
+    swaySpeed: 0.01 + Math.random()*0.02,
+    rot: Math.random()*Math.PI*2,
+    rotSpeed: (Math.random()-0.5)*0.01,
+    opacity: 0.25 + Math.random()*0.4,
+    color: Math.random() > 0.5 ? '#F3B8CD' : '#C9B6E4'
+  };
+}
+for(let i=0;i<particleCount;i++) particles.push(makeParticle());
+
+function drawHeart(p){
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rot);
+  ctx.globalAlpha = p.opacity;
+  ctx.fillStyle = p.color;
+  const s = p.size/16;
+  ctx.beginPath();
+  ctx.moveTo(0, 4*s);
+  ctx.bezierCurveTo(-8*s, -6*s, -16*s, 2*s, 0, 12*s);
+  ctx.bezierCurveTo(16*s, 2*s, 8*s, -6*s, 0, 4*s);
+  ctx.fill();
+  ctx.restore();
+}
+function drawPetal(p){
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rot);
+  ctx.globalAlpha = p.opacity;
+  ctx.fillStyle = p.color;
+  ctx.beginPath();
+  ctx.ellipse(0,0,p.size*0.6,p.size*0.32,0,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{
+    p.y -= p.speed;
+    p.sway += p.swaySpeed;
+    p.x += Math.sin(p.sway)*0.5 + p.drift*0.15;
+    p.rot += p.rotSpeed;
+    if(p.y < -30){
+      Object.assign(p, makeParticle());
+      p.y = H + 20;
+    }
+    if(p.type === 'heart') drawHeart(p); else drawPetal(p);
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+function intensifyParticles(){
+  for(let i=0;i<14;i++) particles.push(makeParticle());
+}
+
+/* ---------------- Ambient sound (Web Audio, no external files) ---------------- */
+let audioCtx = null;
+let ambientNodes = null;
+let playing = false;
+
+function startAmbient(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const ctxA = audioCtx;
+  const master = ctxA.createGain();
+  master.gain.value = 0;
+  master.connect(ctxA.destination);
+  master.gain.linearRampToValueAtTime(0.05, ctxA.currentTime + 2);
+
+  const freqs = [261.6, 329.6, 392.0]; // soft C major-ish pad
+  const oscs = freqs.map((f, idx)=>{
+    const osc = ctxA.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = f;
+    const g = ctxA.createGain();
+    g.gain.value = 0.5;
+    const lfo = ctxA.createOscillator();
+    lfo.frequency.value = 0.05 + idx*0.02;
+    const lfoGain = ctxA.createGain();
+    lfoGain.gain.value = 0.15;
+    lfo.connect(lfoGain);
+    lfoGain.connect(g.gain);
+    lfo.start();
+    osc.connect(g);
+    g.connect(master);
+    osc.start();
+    return {osc, lfo, g};
+  });
+
+  ambientNodes = { master, oscs };
+  playing = true;
+}
+
+function stopAmbient(){
+  if(!ambientNodes) return;
+  const { master, oscs } = ambientNodes;
+  master.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1.2);
+  setTimeout(()=>{
+    oscs.forEach(o=>{ try{ o.osc.stop(); o.lfo.stop(); }catch(e){} });
+  }, 1300);
+  ambientNodes = null;
+  playing = false;
+}
+
+const soundBtn = document.getElementById('soundBtn');
+soundBtn.addEventListener('click', ()=>{
+  if(!playing){
+    startAmbient();
+    soundBtn.textContent = '🔊';
+  } else {
+    stopAmbient();
+    soundBtn.textContent = '🔇';
+  }
+});
+</script>
+</body>
+</html>
